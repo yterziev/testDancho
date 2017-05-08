@@ -22,7 +22,43 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
+//app.use('/', index);
+app.get('/', function (req, res) {
+   
+    var sql = require("mssql");
+
+    // config for your database
+   
+    var config = {
+        user: 'switch',
+        password: 'switch',
+        server: 'localhost', 
+        database: 'testApp',
+        port: 1433,
+        options: {
+instanceName: "SQLEXPRESS"}
+    };
+    // connect to your database
+    sql.connect(config, function (err) {
+    
+        if (err) console.log(err);
+
+        // create Request object
+        var request = new sql.Request();
+           
+        // query to the database and get the records
+        request.query('select * from dbo.users', function (err, recordset) {
+            
+            if (err) console.log(err)
+
+            // send records as a response
+            res.send(recordset);
+            
+        });
+    });
+});
+
+
 app.use('/helloworld', index);
 app.use('/users', users);
 
